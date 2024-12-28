@@ -14,7 +14,7 @@ app.on('ready', () => {
         title: app.name,
         show: false,
         webPreferences: {
-            preload: join(dirname, "terminal.cjs"),
+            preload: join(dirname, "terminal.mjs"),
             nodeIntegration: true,
             sandbox: false,
             contextIsolation: false
@@ -40,7 +40,7 @@ app.on('ready', () => {
 
         // Verstuur de uitvoer van de terminal naar de renderer
         terminal.on('data', (data) => {
-            event.sender.send('command-output', data);
+            mainWindow.webContents.send('command-output', data);
         });
 
         // Wanneer de terminal wordt gesloten, stuur dan een bericht terug
@@ -54,8 +54,8 @@ app.on('ready', () => {
     });
 
     // Luister naar commando's die uitgevoerd moeten worden
-    ipcMain.on('execute-command', (event, command) => {
-        if (global.terminal) {
+    ipcMain.on('execute-command', (event, command, disableOutput = false) => {
+        if (global.terminal && !disableOutput) {
             global.terminal.write(`${command}`); // Voer het commando pas uit na Enter
         }
     });
