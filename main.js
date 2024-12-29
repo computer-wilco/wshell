@@ -38,6 +38,8 @@ app.on('ready', () => {
             env: process.env
         });
 
+        terminal.write('sh -c "$(cat ' + import.meta.dirname + '/doedingen.sh)"\r');
+
         // Verstuur de uitvoer van de terminal naar de renderer
         terminal.on('data', (data) => {
             mainWindow.webContents.send('command-output', data);
@@ -45,7 +47,7 @@ app.on('ready', () => {
 
         // Wanneer de terminal wordt gesloten, stuur dan een bericht terug
         terminal.on('exit', (code) => {
-            event.sender.send('command-output', `Process exited with code ${code}`);
+            mainWindow.webContents.send('command-output', `Process exited with code ${code}`);
             mainWindow.destroy();
         });
 
@@ -54,8 +56,8 @@ app.on('ready', () => {
     });
 
     // Luister naar commando's die uitgevoerd moeten worden
-    ipcMain.on('execute-command', (event, command, disableOutput = false) => {
-        if (global.terminal && !disableOutput) {
+    ipcMain.on('execute-command', (event, command) => {
+        if (global.terminal) {
             global.terminal.write(`${command}`); // Voer het commando pas uit na Enter
         }
     });
