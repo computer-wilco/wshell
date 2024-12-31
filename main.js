@@ -29,6 +29,7 @@ app.on('ready', () => {
 
     ipcMain.on('start-terminal', (event) => {
         const shell = platform() === 'win32' ? 'cmd.exe' : 'bash'; // Afhankelijk van het platform
+        let outputBuffer = '';
 
         const terminal = pty.spawn(shell, [], {
             name: 'xterm-256color',
@@ -38,12 +39,18 @@ app.on('ready', () => {
             env: process.env
         });
 
-        terminal.write('sh -c "$(cat ' + import.meta.dirname + '/doedingen.sh)"\r');
-
-        // Verstuur de uitvoer van de terminal naar de renderer
         terminal.on('data', (data) => {
+            outputBuffer += data; // Buffer de uitvoer
             mainWindow.webContents.send('command-output', data);
+    
+            // Controleer of het script klaar is (bijvoorbeeld door te zoeken naar een prompt of specifiek bericht)
+            if (data.includes('EINDE_SCRIPT')) { // Pas dit aan naar het einde van jouw script
+                terminal.write('');
+                mainWindow.webContents.send('starting'); // Nu pas versturen
+            }
         });
+
+        terminal.write(`sh -c "$(cat ${import.meta.dirname}/doedingen.sh)"\r`);
 
         // Wanneer de terminal wordt gesloten, stuur dan een bericht terug
         terminal.on('exit', (code) => {
