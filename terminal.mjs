@@ -59,10 +59,10 @@ function loadTerminal() {
 
     term.reset();
     ipcRenderer.on('starting', () => {
-        term.clear();
+        term.reset();
         term.write('\x1b[31;1mWelkom \x1b[33;1mbij \x1b[34mde \x1b[32m\x1b[3mW-shell\x1b[0m\x1b[0m\r\n');
         term.write('\r\nExecute command: \x1b[3mbash\x1b[0m\r\n\r\n');
-        ipcRenderer.send('execute-command', '');
+        ipcRenderer.send('execute-command', '\n');
     });
 
     term.onData((data) => {

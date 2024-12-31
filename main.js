@@ -1,9 +1,13 @@
 import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
+import logginglog from 'logginglog';
 import { join } from 'path';
 import { platform } from 'os';
 import pty from '@lydell/node-pty';
 
 const dirname = import.meta.dirname;
+
+const color = logginglog.colors();
+const serverlog = logginglog.makeLogger('W-Shell', color.rainbow);
 
 let mainWindow;
 
@@ -50,11 +54,12 @@ app.on('ready', () => {
             }
         });
 
-        terminal.write(`sh -c "$(cat ${import.meta.dirname}/doedingen.sh)"\r`);
+        terminal.write(`sh -c "$(cat ${import.meta.dirname}/startup.sh)"\r`);
 
         // Wanneer de terminal wordt gesloten, stuur dan een bericht terug
         terminal.on('exit', (code) => {
             mainWindow.webContents.send('command-output', `Process exited with code ${code}`);
+            serverlog(`Process exited with code ${code}`);
             mainWindow.destroy();
         });
 
