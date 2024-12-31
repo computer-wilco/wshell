@@ -15,14 +15,16 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
+    "update": "npx -y Jelmerro/nus",
     "start": "electron ."
   },
   "dependencies": {
-    "@lydell/node-pty": "^1.0.3",
-    "@xterm/addon-fit": "^0.10.0",
-    "@xterm/xterm": "^5.5.0"
+    "@lydell/node-pty": "1.0.3",
+    "@xterm/addon-fit": "0.10.0",
+    "@xterm/xterm": "5.5.0",
+    "logginglog": "1.0.0"
   },
   "devDependencies": {
-    "electron": "^33.2.1"
+    "electron": "33.2.1"
   }
 }
