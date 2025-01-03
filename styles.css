@@ -1,0 +1,23 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: #2D2E2C;
+    overflow: hidden;
+}
+
+#xterminal-box {
+    width: 100%;
+    height: 100%;
+    background-color: #2D2E2C;
+    text-shadow: none;
+    cursor: text;
+}
+#xterminal {
+    padding-left: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: #2D2E2C;
+    text-shadow: none;
+    text-align: left;
+    cursor: text;
+}
