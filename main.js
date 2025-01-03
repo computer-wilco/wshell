@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import logginglog from 'logginglog';
 import { join } from 'path';
 import { platform } from 'os';
-import { spawn } from '@lydell/node-pty';
+import pty from '@lydell/node-pty';
 
 const dirname = import.meta.dirname;
 
@@ -33,7 +33,6 @@ app.on('ready', () => {
 
     ipcMain.on('start-terminal', (event) => {
         const shell = platform() === 'win32' ? 'cmd.exe' : 'bash'; // Afhankelijk van het platform
-        const isWindows = platform() === 'win32' ? true : false; // Afhankelijk van het platform
         let outputBuffer = '';
 
         const terminal = spawn(shell, [], {
@@ -55,11 +54,7 @@ app.on('ready', () => {
             }
         });
 
-        if (isWindows) {
-            mainWindow.webContents.send('starting');
-        } else {
-            terminal.write(`sh -c "$(cat ${import.meta.dirname}/startup.sh)"\r`);
-        }
+        terminal.write(`sh -c "$(cat ${import.meta.dirname}/startup.sh)"\r`);
 
         // Wanneer de terminal wordt gesloten, stuur dan een bericht terug
         terminal.on('exit', (code) => {
