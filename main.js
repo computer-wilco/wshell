@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import logginglog from 'logginglog';
 import { join } from 'path';
 import { platform } from 'os';
-import pty from '@lydell/node-pty';
+import { spawn } from '@lydell/node-pty';
 
 const dirname = import.meta.dirname;
 
@@ -32,8 +32,7 @@ app.on('ready', () => {
     globalShortcut.register("F12", () => mainWindow.webContents.openDevTools({ mode: 'detach' }));
 
     ipcMain.on('start-terminal', (event) => {
-        const shell = platform() === 'win32' ? 'cmd.exe' : 'bash'; // Afhankelijk van het platform
-        let outputBuffer = '';
+        const shell = platform() === 'win32' ? 'powershell.exe' : 'bash'; // Afhankelijk van het platform
 
         const terminal = spawn(shell, [], {
             name: 'xterm-256color',
@@ -44,17 +43,8 @@ app.on('ready', () => {
         });
 
         terminal.on('data', (data) => {
-            outputBuffer += data; // Buffer de uitvoer
             mainWindow.webContents.send('command-output', data);
-    
-            // Controleer of het script klaar is (bijvoorbeeld door te zoeken naar een prompt of specifiek bericht)
-            if (data.includes('EINDE_SCRIPT')) { // Pas dit aan naar het einde van jouw script
-                terminal.write('');
-                mainWindow.webContents.send('starting'); // Nu pas versturen
-            }
         });
-
-        terminal.write(`sh -c "$(cat ${import.meta.dirname}/startup.sh)"\r`);
 
         // Wanneer de terminal wordt gesloten, stuur dan een bericht terug
         terminal.on('exit', (code) => {
