@@ -1,6 +1,9 @@
 import { ipcRenderer } from 'electron';
 import fitaddon from '@xterm/addon-fit';
 import xterm from '@xterm/xterm';
+const { FitAddon } = fitaddon;
+const { Terminal } = xterm;
+
 function loadTerminal() {
     var theme = {
         foreground: '#F8F8F8',
@@ -24,9 +27,9 @@ function loadTerminal() {
         brightWhite: '#FFFFFF'
     };
 
-    var fitAddon = new fitaddon.FitAddon();
+    var fitAddon = new FitAddon();
 
-    var term = new xterm.Terminal({
+    var term = new Terminal({
         fontFamily: '"Cascadia Code", Menlo, monospace',
         fontWeight: 'bold',
         fontSize: 15,
@@ -61,8 +64,7 @@ function loadTerminal() {
     ipcRenderer.on('starting', () => {
         term.reset();
         term.write('\x1b[31;1mWelkom \x1b[33;1mbij \x1b[34mde \x1b[32m\x1b[3mW-shell\x1b[0m\x1b[0m\r\n');
-        term.write('\r\nExecute command: \x1b[3mbash\x1b[0m\r\n\r\n');
-        ipcRenderer.send('execute-command', '\n');
+        term.write(`\r\nExecute command: \x1b[3m${process.env.SHELL}\x1b[0m\r\n\r\n`);
     });
 
     term.onData((data) => {

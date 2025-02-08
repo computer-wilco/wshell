@@ -53,6 +53,8 @@ app.on('ready', () => {
             mainWindow.destroy();
         });
 
+        mainWindow.webContents.send("starting");
+
         // Sla het terminal object op in een globale variabele om later toegang te krijgen
         global.terminal = terminal;
     });
