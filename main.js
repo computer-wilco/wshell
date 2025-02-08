@@ -32,7 +32,7 @@ app.on('ready', () => {
     globalShortcut.register("F12", () => mainWindow.webContents.openDevTools({ mode: 'detach' }));
 
     ipcMain.on('start-terminal', (event) => {
-        const shell = platform() === 'win32' ? 'powershell.exe' : 'bash'; // Afhankelijk van het platform
+        const shell = platform() === 'win32' ? 'powershell.exe' : process.env.SHELL; // Afhankelijk van het platform
 
         const terminal = spawn(shell, [], {
             name: 'xterm-256color',
