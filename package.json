@@ -1,5 +1,5 @@
 {
-  "name": "terminal",
+  "name": "wshell",
   "version": "1.0.0",
   "description": "",
   "keywords": [
@@ -16,7 +16,25 @@
   "main": "main.js",
   "scripts": {
     "update": "npx -y Jelmerro/nus",
-    "start": "electron ."
+    "start": "electron .",
+    "clean": "rm -rfv $HOME/.config/wshell",
+    "build-windows": "electron-builder -w",
+    "build-mac": "electron-builder -m dmg",
+    "build-mac-zip": "electron-builder -m zip",
+    "build-linux": "electron-builder -l",
+    "build-all": "electron-builder -w -l -m zip",
+    "create-icons": "electron-icon-maker --input=./icon.png --output=./"
+  },
+  "build": {
+    "win": {
+      "icon": "icons/win/icon.ico"
+    },
+    "mac": {
+      "icon": "icons/mac/icon.icns"
+    },
+    "linux": {
+      "icon": "icons/png/512x512.png"
+    }
   },
   "dependencies": {
     "@lydell/node-pty": "1.1.0",
@@ -25,6 +43,8 @@
     "logginglog": "1.0.0"
   },
   "devDependencies": {
-    "electron": "34.1.1"
+    "electron": "34.1.1",
+    "electron-builder": "25.1.8",
+    "electron-icon-maker": "0.0.5"
   }
 }
