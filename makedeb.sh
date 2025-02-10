@@ -78,7 +78,7 @@ Categories=Normal;
 EOF
 
 # 6. Kopieer het icoon naar de juiste locatie
-cp $ICON $PACKAGE_DIR/usr/share/icons/hicolor/512x512/apps/
+cp $ICON $PACKAGE_DIR/usr/share/icons/hicolor/512x512/apps/$ICON_NAME
 
 # 7. Pakket maken
 dpkg-deb --build $PACKAGE_DIR
