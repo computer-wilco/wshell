@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import logginglog from 'logginglog';
 import { join } from 'path';
+import { mkdirSync, existsSync } from 'fs';
 import { platform } from 'os';
 import { spawn } from '@lydell/node-pty';
 
@@ -9,9 +10,21 @@ const dirname = import.meta.dirname;
 const color = logginglog.colors();
 const serverlog = logginglog.makeLogger('W-Shell', color.rainbow);
 
+// Configuratie voor shell
+const shell = platform() === 'win32' ? 'powershell.exe' : process.env.SHELL;
+const pathSeparator = platform() === 'win32' ? ';' : ':';
+const homeDir = platform() === 'win32' ? process.env.USERPROFILE : process.env.HOME;
+const hiddenBinDir = join(homeDir, '.w-shell/bin');
+
 let mainWindow;
 
 app.on('ready', () => {
+    const env = { ...process.env, PATH: `${hiddenBinDir}${pathSeparator}${process.env.PATH}` };
+
+    if (!existsSync(hiddenBinDir)) {
+        mkdirSync(hiddenBinDir, { recursive: true });
+    }
+
     mainWindow = new BrowserWindow({
         alwaysOnTop: true,
         autoHideMenuBar: true,
@@ -32,14 +45,12 @@ app.on('ready', () => {
     globalShortcut.register("F12", () => mainWindow.webContents.openDevTools({ mode: 'detach' }));
 
     ipcMain.on('start-terminal', (event) => {
-        const shell = platform() === 'win32' ? 'powershell.exe' : process.env.SHELL; // Afhankelijk van het platform
-
         const terminal = spawn(shell, [], {
             name: 'xterm-256color',
             cols: 80,
             rows: 30,
-            cwd: process.env.HOME,
-            env: process.env
+            cwd: homeDir,
+            env: env
         });
 
         terminal.on('data', (data) => {

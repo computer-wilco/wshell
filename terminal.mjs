@@ -1,8 +1,11 @@
 import { ipcRenderer } from 'electron';
 import fitaddon from '@xterm/addon-fit';
 import xterm from '@xterm/xterm';
+import { platform } from 'os';
 const { FitAddon } = fitaddon;
 const { Terminal } = xterm;
+fitaddon = undefined;
+xterm = undefined;
 
 function loadTerminal() {
     var theme = {
@@ -62,6 +65,7 @@ function loadTerminal() {
 
     term.reset();
     ipcRenderer.on('starting', () => {
+        const shell = platform() === 'win32' ? 'powershell.exe' : process.env.SHELL;
         term.reset();
         term.write('\x1b[31;1mWelkom \x1b[33;1mbij \x1b[34mde \x1b[32m\x1b[3mW-shell\x1b[0m\x1b[0m\r\n');
         term.write(`\r\nExecute command: \x1b[3m${process.env.SHELL}\x1b[0m\r\n\r\n`);
