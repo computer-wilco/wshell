@@ -40,10 +40,11 @@
     "@lydell/node-pty": "1.1.0",
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
+    "adm-zip": "^0.5.16",
     "logginglog": "1.0.0"
   },
   "devDependencies": {
-    "electron": "34.1.1",
+    "electron": "34.2.0",
     "electron-builder": "25.1.8",
     "electron-icon-maker": "0.0.5"
   }

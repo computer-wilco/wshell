@@ -2,8 +2,9 @@ import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import logginglog from 'logginglog';
 import { join } from 'path';
 import { mkdirSync, existsSync } from 'fs';
-import { platform } from 'os';
+import { platform, homedir } from 'os';
 import { spawn } from '@lydell/node-pty';
+import downloadWPM from './installer.js';
 
 const dirname = import.meta.dirname;
 
@@ -16,9 +17,34 @@ const pathSeparator = platform() === 'win32' ? ';' : ':';
 const homeDir = platform() === 'win32' ? process.env.USERPROFILE : process.env.HOME;
 const hiddenBinDir = join(homeDir, '.w-shell/bin');
 
+
 let mainWindow;
 
-app.on('ready', () => {
+async function installWPM() {
+    if (platform() === "win32") {
+        if (!existsSync(join(homedir(), `.w-shell/bin/wpm.exe`))) {
+            try {
+                serverlog('WPM wordt geïnstalleerd!');
+                await downloadWPM();
+                serverlog('WPM is gedownload en geïnstalleerd!');
+            } catch (error) {
+                console.error('Fout bij installatie:', error);
+            }
+        }
+    } else {
+        if (!existsSync(join(homedir(), `.w-shell/bin/wpm`))) {
+            try {
+                serverlog('WPM wordt geïnstalleerd!');
+                await downloadWPM();
+                serverlog('WPM is gedownload en geïnstalleerd!');
+            } catch (error) {
+                console.error('Fout bij installatie:', error);
+            }
+        }
+    }
+}
+
+app.on('ready', async () => {
     const env = { ...process.env, PATH: `${hiddenBinDir}${pathSeparator}${process.env.PATH}` };
 
     if (!existsSync(hiddenBinDir)) {
@@ -40,7 +66,10 @@ app.on('ready', () => {
 
     mainWindow.loadFile(join(dirname, 'index.html'));
 
-    mainWindow.on('ready-to-show', () => mainWindow.show());
+    mainWindow.on('ready-to-show', async () => {
+        await installWPM();
+        mainWindow.show();
+    });
 
     globalShortcut.register("F12", () => mainWindow.webContents.openDevTools({ mode: 'detach' }));
 
